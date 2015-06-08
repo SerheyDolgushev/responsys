@@ -239,7 +239,7 @@ class Responsys
         }
 
         if (isset($result['errorCode'])) {
-            $error = $result['detail'];
+            $error = isset($result['detail']) && empty($result['detail']) === false ? $result['detail'] : $result['title'];
             if (strlen($log->attribute('response_error')) === 0) {
                 $log->setAttribute('response_error', $error);
                 $log->store();
