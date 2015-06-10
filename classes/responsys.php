@@ -130,7 +130,8 @@ class Responsys
                 array(
                     'recipient'    => array(
                         'customerId'   => $customerID,
-                        'emailAddress' => $email,
+                        'emailAddress' => null,
+                        //'emailAddress' => $email,
                         'listName'     => array(
                             'folderName' => 'MasterData',
                             'objectName' => 'CONTACTS_LIST'
@@ -238,8 +239,14 @@ class Responsys
             throw new Exception($error);
         }
 
+        $error = null;
         if (isset($result['errorCode'])) {
             $error = isset($result['detail']) && empty($result['detail']) === false ? $result['detail'] : $result['title'];
+        } elseif (isset($result[0]['errorMessage'])) {
+            $error = $result[0]['errorMessage'];
+        }
+
+        if ($error !== null) {
             if (strlen($log->attribute('response_error')) === 0) {
                 $log->setAttribute('response_error', $error);
                 $log->store();
