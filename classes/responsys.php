@@ -155,6 +155,54 @@ class Responsys
     }
 
     /**
+     * Triggers custom event
+     * @param string $event
+     * @param array $receivers
+     * @param array $optionalData
+     * @return array
+     */
+    public function triggerCampaign($event, array $receivers, array $optionalData = array())
+    {
+        $contactListDB = $this->ini->variable('General', 'ContactListDatabase');
+
+        $records     = array();
+        $triggerData = array();
+        foreach ($receivers as $email) {
+            $records[]     = array('fieldValues' => array($email, $contactListDB));
+            $triggerData[] = array('optionalData' => $optionalData);
+        }
+
+        $data = array(
+            'recordData'  => array(
+                'fieldNames' => array('EMAIL_ADDRESS_', 'DATABASE_ID'),
+                'records'    => $records
+            ),
+            'mergeRule'   => array(
+                'htmlValue'                  => 'H',
+                'optinValue'                 => 'I',
+                'textValue'                  => 'T',
+                'insertOnNoMatch'            => true,
+                'updateOnMatch'              => 'REPLACE_ALL',
+                'matchColumnName1'           => 'EMAIL_ADDRESS_',
+                'matchColumnName2'           => 'DATABASE_ID',
+                'matchOperator'              => 'NONE',
+                'optoutValue'                => 'O',
+                'rejectRecordIfChannelEmpty' => null,
+                'defaultPermissionStatus'    => 'OPTIN'
+            ),
+            'triggerData' => $triggerData
+        );
+
+        $uri = rtrim($this->serverURL, '/') . '/rest/api/v1/campaigns/API_' . $event . '/email';
+
+        try {
+            return $this->sendAuthorizedRequest($uri, $data);
+        } catch (Exception $e) {
+            throw new Exception('Unable to trigger campaign', null, $e);
+        }
+    }
+
+    /**
      * Send HTTP request
      * @param string $uri
      * @param array $data
