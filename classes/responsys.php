@@ -238,10 +238,13 @@ class Responsys
         );
         $headers       = array_merge($defaultHeders, $headers);
 
+        $dataJSON = json_encode($data, JSON_PRETTY_PRINT);
+        // Fix double slashes for unicode sequences
+        $dataJSON = preg_replace('/\\\\\\\\u([0-9a-fA-F]{4})/u', '\u$1', $dataJSON);
         switch ($method) {
             case 'POST':
                 curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $dataJSON);
                 break;
             case 'PUT':
                 curl_setopt($curl, CURLOPT_PUT, true);
@@ -264,7 +267,7 @@ class Responsys
 
         $log = new ResponsysLog();
         $log->setAttribute('request_uri', $uri);
-        $log->setAttribute('request', json_encode($data, JSON_PRETTY_PRINT));
+        $log->setAttribute('request', $dataJSON);
         $log->setAttribute('request_headers', implode("\n", $headers));
         $log->setAttribute('response_status', $info['http_code']);
         $log->setAttribute('response_headers', $header);
