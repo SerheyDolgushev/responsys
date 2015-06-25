@@ -7,13 +7,14 @@
  * */
 class Responsys
 {
-    private $serverURL       = 'https://api2-015.responsys.net/';
-    private $loginURL        = 'https://login2.responsys.net/';
-    private $timeout         = 15;
-    private $authToken       = null;
-    private $ini             = null;
-    private $ignoreSSL       = true;
-    private static $instance = null;
+    private $serverURL          = 'https://api2-015.responsys.net/';
+    private $loginURL           = 'https://login2.responsys.net/';
+    private $timeout            = 15;
+    private $authToken          = null;
+    private $ini                = null;
+    private $ignoreSSL          = true;
+    private static $instance    = null;
+    private static $lastLogItem = null;
 
     /**
      * Constructor
@@ -278,6 +279,8 @@ class Responsys
         }
         $log->store();
 
+        self::$lastLogItem  = $log;
+
         curl_close($ch);
 
         $result = json_decode($response, true);
@@ -306,6 +309,10 @@ class Responsys
         }
 
         return $result;
+    }
+
+    public function getLastLogItem() {
+        return self::$lastLogItem;
     }
 
     /**
