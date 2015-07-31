@@ -146,7 +146,7 @@ class Responsys
             )
         );
 
-        $uri = rtrim($this->serverURL, '/') . '/rest/api/v1/events/API_' . $event;
+        $uri = rtrim($this->serverURL, '/') . '/rest/api/v1/events/' . $event;
 
         try {
             return $this->sendAuthorizedRequest($uri, $data);
@@ -194,7 +194,7 @@ class Responsys
             'triggerData' => $triggerData
         );
 
-        $uri = rtrim($this->serverURL, '/') . '/rest/api/v1/campaigns/API_' . $event . '/email';
+        $uri = rtrim($this->serverURL, '/') . '/rest/api/v1/campaigns/' . $event . '/email';
 
         try {
             return $this->sendAuthorizedRequest($uri, $data);
@@ -248,7 +248,7 @@ class Responsys
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $dataJSON);
                 break;
             case 'PUT':
-                curl_setopt($curl, CURLOPT_PUT, true);
+                curl_setopt($ch, CURLOPT_PUT, true);
                 break;
         }
 
@@ -332,9 +332,6 @@ class Responsys
         $indent = 0;
 
         $format = 'txt';
-
-        //$ind = "\t";
-        $ind = "    ";
 
         if (isset($options['format'])) {
             $format = $options['format'];
